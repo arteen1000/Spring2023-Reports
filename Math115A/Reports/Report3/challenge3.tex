@@ -1,0 +1,653 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[skip=0.25cm]{parskip}
+\usepackage[total={6.5in, 8.75in}, top=1.2in, left=0.9in, includefoot]{geometry} 
+
+\usepackage{graphicx} % images
+\usepackage{enumitem} % managing lists
+\usepackage{float} % precise placement
+
+\usepackage{listings} % code
+\usepackage{amssymb, amsmath, amsthm}
+\usepackage{outlines}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+
+\title{
+Cayley-Hamilton and Diagonalizability \\
+\large Challenge Report 3 \\
+Math 115A}
+\author{Arteen Abrishami}
+\date{}
+\renewcommand{\abstractname}{Problem Statement}
+
+\linespread{1.5}
+\let\tab\quad
+
+\usepackage{titlesec}
+
+\newcommand\almostnormalsize{\fontsize{11.42}{11.38}\selectfont}
+
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\almostnormalsize\bfseries}
+
+\allowdisplaybreaks
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+
+Linear maps $T: V \to V$ of finite dimensional vector spaces correspond to $n \times n$ matrices, where $dim(V)=n$. This is equivalent to stating that there is an isomorphism $\mathcal{L}(V,V) \to M_{n \times n}(\F)$. Therefore, composition of linear maps corresponds to matrix multiplication.  
+
+We will consider what happens when we compose $T$ with itself many times, which corresponds to multiplying the standard matrix $[A]_{\beta}^{\beta}$, for a basis $\beta$, with itself many times.
+
+\textbf{Definition}
+    Let $k$ be a non-negative integer, and let $[A] \in M_{n\times n}(\F)$. 
+ $[A]^k$ denotes the product of $k$ copies of $[A]$. For example, $[A]^2 = [A][A]$.
+
+    Furthermore, we define $[A]^0$ to be the $n \times n$ identity matrix.
+
+One can deduce several relationships about powers of matrices - one of the most important theorems is the following:
+
+\textbf{Theorem} (Cayley-Hamilton)
+    Let $[A] \in M_{n\times n}(\F)$, and let $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t)$ be the characteristic polynomial of $[A]$.  Then $$\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) = [0]$$
+
+    That is, if $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t) = \sum_{i=0}^n c_it^i$, then 
+    $$\sum_{i=0}^n c_i[A]^i = [0]$$
+
+In other words, a matrix always satisfies its own characteristic polynomial.
+
+\vspace{0.5pt}
+
+Another construction we can do with matrices is as follows:
+
+\textbf{Definition}
+    Let $[A] \in M_{n\times n}(\C)$.  The \textbf{matrix exponential of $[A]$} is denoted $e^{[A]} \in M_{n\times n}(\C)$, and is defined by 
+    $$e^{[A]} := \sum_{k=0}^\infty \frac{1}{k!} [A]^k$$
+
+The matrix exponential has several nice properties. Notably, it is used to solve systems of linear ordinary differential equations.
+
+\emph{Remark}
+    Recall that the function $e^x : \C \to \C$ has the Taylor expansion
+    $$e^{x} := \sum_{k=0}^\infty \frac{1}{k!} x^k$$
+
+    Hence, the matrix exponential is a generalization of the exponential function.
+
+We will prove the Cayley-Hamilton theorem for \textbf{diagonalizable} matrices, alongside properties of their matrix exponentials, with many examples.
+
+\end{abstract}
+
+\section*{Part 1 \textmd{Cayley-Hamilton on a Matrix $[A]$}}
+
+Consider the matrix
+\renewcommand{\arraystretch}{0.8}
+$$[A] = \begin{bmatrix}
+3 & 7 & 2 \\
+-2 & 3 & 1 \\
+1 & 1 & 2 \\
+\end{bmatrix} \in M_{3\times3}(\C)$$
+
+\subsection*{(a) \textmd{Characteristic Polynomial}}
+
+By definition, for a $3\times3$ matrix, the characteristic polynomial is $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t) := det(A-tI_3)$.
+
+We can see that
+\begin{align*}
+		\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t) &= det(A-tI_3) \\
+			&= det(
+			\begin{bmatrix}
+			3 & 7 & 2 \\
+			-2 & 3 & 1 \\
+			1 & 1 & 2 \\
+			\end{bmatrix} 
+			- t
+			\begin{bmatrix}
+			1 & 0 & 0 \\
+			0 & 1 & 0 \\
+			0 & 0 & 1 \\
+			\end{bmatrix} ) \\	
+			&= det(
+			\begin{bmatrix}
+			3 - t & 7 & 2 \\
+			-2 & 3 - t & 1 \\
+			1 & 1 & 2 - t \\
+			\end{bmatrix}
+			) \\			
+			&= \begin{vmatrix}
+			3 - t & 7 & 2 \\
+			-2 & 3 - t & 1 \\
+			1 & 1 & 2 - t \\
+			\end{vmatrix} \\
+			&= -t^3+8t^2-32t+40
+\end{align*}
+
+\subsection*{(b) \textmd{Cayley-Hamilton}}
+
+We would like to show that $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) = [0]$ in order to show that the Cayley-Hamilton theorem holds for $[A]$.
+
+Note that
+\begin{align*}
+[A]^0 &= \begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[A] &= \begin{bmatrix}
+3 & 7 & 2 \\
+-2 & 3 & 1 \\
+1 & 1 & 2 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[A]^2 &= \begin{bmatrix}
+-3 & 44 & 17 \\
+-11 & -4 & 1 \\
+3 & 12 & 7 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[A]^3 &= \begin{bmatrix}
+-80 & 128 & 72 \\
+-24 & -88 & -24 \\
+-8 & 64 & 32 \\
+\end{bmatrix} \in M_{3\times3}(\C)
+\end{align*}
+
+Therefore
+\begin{align*}
+	\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) 
+	&=
+	-[A]^3+8[A]^2-32[A]+40[A]^0 \\
+	&=
+	-
+	\begin{bmatrix}
+	-80 & 128 & 72 \\
+	-24 & -88 & -24 \\
+	-8 & 64 & 32 \\
+	\end{bmatrix}
+	+8
+	\begin{bmatrix}
+	-3 & 44 & 17 \\
+	-11 & -4 & 1 \\
+	3 & 12 & 7 \\
+	\end{bmatrix} 
+	-32
+	\begin{bmatrix}
+	3 & 7 & 2 \\
+	-2 & 3 & 1 \\
+	1 & 1 & 2 \\
+	\end{bmatrix}
+	+40
+	\begin{bmatrix}
+	1 & 0 & 0 \\
+	0 & 1 & 0 \\
+	0 & 0 & 1 \\
+	\end{bmatrix} \\
+	&=
+	\begin{bmatrix}
+	80 & -128 & -72 \\
+	24 & 88 & 24 \\
+	8 & -64 & -32 \\
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	-24 & 132 & 136 \\
+	-88 & -32 & 8 \\
+	24 & 96 & 56 \\
+	\end{bmatrix} 
+	+
+	\begin{bmatrix}
+	-96 & -224 & -64 \\
+	64 & -96 & -32 \\
+	-32 & -32 & -64 \\
+	\end{bmatrix}
+	+
+	\begin{bmatrix}
+	40 & 0 & 0 \\
+	0 & 40 & 0 \\
+	0 & 0 & 40 \\
+	\end{bmatrix} \\
+	&=
+	\begin{bmatrix}
+	0 & 0 & 0 \\
+	0 & 0 & 0 \\
+	0 & 0 & 0 \\
+	\end{bmatrix} \\
+	&=
+	[0] \in M_{3\times3}(\C)		 
+\end{align*}
+as desired.	
+
+\section*{Part 2 \textmd{Cayley-Hamilton on a Matrix $[B]$}}
+
+Consider the matrix
+$$[B] = \begin{bmatrix}
+2 & 5 & 1 \\
+2 & 1 & 5 \\
+-2 & -3 & -3 \\
+\end{bmatrix} \in M_{3\times3}(\C)$$
+
+\subsection*{(a) \textmd{Characteristic Polynomial}}
+
+By definition, for a $3\times3$ matrix, the characteristic polynomial is $\chi_{\raisebox{-.5ex}{$\scriptstyle B$}}(t) := det(B-tI_3)$.
+
+We can see that
+\begin{align*}
+		\chi_{\raisebox{-.5ex}{$\scriptstyle B$}}(t) &= det(B-tI_3) \\
+			&= det(
+			\begin{bmatrix}
+			2 & 5 & 1 \\
+			2 & 1 & 5 \\
+			-2 & -3 & -3 \\
+			\end{bmatrix} 
+			- t
+			\begin{bmatrix}
+			1 & 0 & 0 \\
+			0 & 1 & 0 \\
+			0 & 0 & 1 \\
+			\end{bmatrix} ) \\
+			&= det(
+			\begin{bmatrix}
+			2- t & 5 & 1 \\
+			2 & 1 - t & 5 \\
+			-2 & -3 & -3 - t \\
+			\end{bmatrix}
+			) \\
+			&= \begin{vmatrix}
+			2- t & 5 & 1 \\
+			2 & 1 - t & 5 \\
+			-2 & -3 & -3 - t \\
+			\end{vmatrix} \\
+			&= -t^3
+\end{align*}
+
+\subsection*{(b) \textmd{Matrix Exponential}}
+
+First observe that the matrix $[B]$ is \textbf{nilpotent}. That is, $\exists k \in \Z_{\ge0}, [B]^k = [0]$.
+\begin{align*}
+[B]^0 &= \begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[B]^1 &= \begin{bmatrix}
+2 & 5 & 1 \\
+2 & 1 & 5 \\
+-2 & -3 & -3 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[B]^2 &= \begin{bmatrix}
+12 & 12 & 24 \\
+-4 & -4 & -8 \\
+-4 & -4 & -8 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[B]^3 &= \begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{bmatrix} \in M_{3\times3}(\C) \\
+[B]^k &= \begin{bmatrix}
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+0 & 0 & 0 \\
+\end{bmatrix} \in M_{3\times3}(\C), k \in \Z_{\ge 3}
+\end{align*}
+
+where $e^{[B]} := \sum_{k=0}^\infty \frac{1}{k!} [B]^k$ and $0! := 1$, therefore
+\begin{align*}
+	e^{[B]} &= \sum_{k=0}^\infty \frac{1}{k!} [B]^k \\
+		   &=
+		   \frac{1}{0!}[B]^0+\frac{1}{1!}[B]^1+\frac{1}{2!}[B]^2+\frac{1}{3!}[B]^3+\ldots \\
+		   &=	
+		   \frac{1}{0!}
+		   \begin{bmatrix}
+			1 & 0 & 0 \\
+			0 & 1 & 0 \\
+			0 & 0 & 1 \\
+		   \end{bmatrix}
+		   +\frac{1}{1!}
+		   \begin{bmatrix}
+			2 & 5 & 1 \\
+			2 & 1 & 5 \\
+			-2 & -3 & -3 \\
+		   \end{bmatrix}		   
+		   +\frac{1}{2!}
+		   \begin{bmatrix}
+			12 & 12 & 24 \\
+			-4 & -4 & -8 \\
+			-4 & -4 & -8 \\
+		   \end{bmatrix}
+		   +\frac{1}{3!}
+		   \begin{bmatrix}
+			0 & 0 & 0 \\
+			0 & 0 & 0 \\
+			0 & 0 & 0 \\
+		   \end{bmatrix}		   
+		   +\ldots \\
+		   &=
+		   \begin{bmatrix}
+			9 & 11 & 13 \\
+			0 & 0 & 1 \\
+			-4 & -5 & -6 \\
+		   \end{bmatrix}				   
+\end{align*}
+
+\section*{Part 3 \textmd{Matrix Exponential of $[D]$}}
+
+Let $[D]=[d_{ij}] \in M_{n\times n}(\C)$ be an arbitrary diagonal matrix where $d_{ij} = 0_\C$ if $i \ne j$. We will calculate the matrix exponential $e^{[D]}$.
+
+First note
+\begin{align*}
+[D]^0 &= \begin{bmatrix}
+1_\C & \cdots & 0_\C \\
+\vdots & \ddots & \vdots \\
+0_\C & \cdots & 1_\C \\
+\end{bmatrix} \in M_{n\times n}(\C) \\
+[D]^1 &= \begin{bmatrix}
+d_{11} & \cdots & 0_\C\\
+\vdots & \ddots & \vdots \\
+0_\C & \cdots & d_{nn} \\
+\end{bmatrix} \in M_{n\times n}(\C) \\
+[D]^2 &= \begin{bmatrix}
+{d_{11}}^2 & \cdots & 0_\C\\
+\vdots & \ddots & \vdots \\
+0_\C & \cdots & {d_{nn}}^2 \\
+\end{bmatrix} \in M_{n\times n}(\C) \\
+[D]^3 &= \begin{bmatrix}
+{d_{11}}^3 & \cdots & 0_\C\\
+\vdots & \ddots & \vdots \\
+0_\C & \cdots & {d_{nn}}^3 \\
+\end{bmatrix} \in M_{n\times n}(\C) \\
+[D]^k &= \begin{bmatrix}
+{d_{11}}^k & \cdots & 0_\C\\
+\vdots & \ddots & \vdots \\
+0_\C & \cdots & {d_{nn}}^k \\
+\end{bmatrix} \in M_{n\times n}(\C), k \in \Z_{\ge 0}
+\end{align*}
+
+Recall $e^{[D]} := \sum_{k=0}^\infty \frac{1}{k!} [D]^k$ and $e^{d_{ij}} := \sum_{k=0}^\infty \frac{1}{k!} {d_{ij}}^k$. We have
+\begin{align*}
+	e^{[D]} &= \sum_{k=0}^\infty \frac{1}{k!} [D]^k \\
+		&=
+		\sum_{k=0}^\infty \frac{1}{k!} 
+		 \begin{bmatrix}
+			{d_{11}}^k & \cdots & 0_\C\\
+			\vdots & \ddots & \vdots \\
+			0_\C & \cdots & {d_{nn}}^k
+		\end{bmatrix} \\		
+		&=
+		\begin{bmatrix}
+			\sum_{k=0}^\infty \frac{1}{k!} {d_{11}}^k & \cdots & 0_\C\\
+			\vdots & \ddots & \vdots \\
+			0_\C & \cdots & \sum_{k=0}^\infty \frac{1}{k!} {d_{nn}}^k
+		\end{bmatrix}  \hspace{13.7em} \text{by component-wise addition} \\	
+		&=
+		\begin{bmatrix}
+			e^{d_{11}} & \cdots & 0_\C\\
+			\vdots & \ddots & \vdots \\
+			0_\C & \cdots & e^{d_{nn}}
+		\end{bmatrix}			
+\end{align*}
+
+\section*{Part 4 \textmd{Matrix Exponential of $[A]$}}
+
+Let $[A] \in M_{n\times n}(\C)$ be diagonalizable, with diagonal matrix $[D]$. By definition, $\exists$ invertible matrix $[Q]$ such that $[A] = [Q]^{-1}[D][Q]$. Let $[I] \in M_{n \times n}(\C)$ denote the identity matrix.
+
+\subsection*{(a) \textmd{Formula for $[A]^k$}}
+
+We give a formula for $[A]^k$ in terms of $[D]$. We do this by expanding the diagonalization and factorizing out the matrices $[Q]$ and $[Q]^{-1}$.
+\begin{align*}
+	[A]^k &= ([Q]^{-1}[D][Q])^k \\
+		&= ([Q]^{-1}[D][Q])([Q]^{-1}[D][Q])\cdots([Q]^{-1}[D][Q])([Q]^{-1}[D][Q]) \\
+		&= [Q]^{-1}[D]([Q][Q]^{-1})[D]([Q]\cdots[Q]^{-1})[D]([Q][Q]^{-1})[D][Q]  \hspace{5.55em} \text{by associativity}\\
+		&= [Q]^{-1}[D]([I])[D]([I])\cdots([I])[D]([I])[D][Q]  \hspace{11.5em} \text{by property of the inverse}\\
+		&= [Q]^{-1}[D][D]\cdots[D][D][Q]  \hspace{19.0em} \text{by identity} \\
+		&= [Q]^{-1}[D]^k[Q]
+\end{align*}
+
+\subsection*{(b) \textmd{Formula for $e^{[A]}$}}
+
+We give a formula for $e^{[A]}$ in terms of $e^{[D]}$.
+\begin{align*}
+	e^{[A]} &= \sum_{k=0}^\infty \frac{1}{k!} [A]^k \\
+		&= \frac{1}{0!}[A]^0 + \frac{1}{1!}[A]^1 + \frac{1}{2!}[A]^2 + \dots \\
+		&= [I] + [A] + \frac{1}{2!}[A]^2 + \dots \\
+		&= [Q]^{-1}[I][Q] + [Q]^{-1}[D][Q] + \frac{1}{2!}([Q]^{-1}[D][Q])([Q]^{-1}[D][Q]) + \dots  \hspace{2.7em} \text{by property of the inverse}\\
+		&= [Q]^{-1}([I] + [D] + \frac{1}{2!}[D]^2 + \dots)[Q]  \hspace{15.5em} \text{by distributivity} \\
+		&= [Q]^{-1}(\frac{1}{0!}[D]^0 + \frac{1}{1!}[D] + \frac{1}{2!}[D]^2 + \dots)[Q] \\
+		&= [Q]^{-1}(\sum_{k=0}^\infty \frac{1}{k!} [D]^k)[Q] \\
+		&= [Q]^{-1}(e^{[D]})[Q]
+\end{align*}
+
+\subsection*{(c) \textmd{Calculation for $e^{[A]}$}}
+
+Let $$[A] = \begin{bmatrix}
+3 & 7 & 2 \\
+-2 & 3 & 1 \\
+1 & 1 & 2 \\
+\end{bmatrix} \in M_{3\times3}(\C)$$
+
+Note that $[A]$ is diagonalizable. This is because the roots of $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t) = -t^3+8t^2-32t+40$ are exactly $2, 3+\sqrt{11}i, 3-\sqrt{11}i$, where the number of distinct eigenvalues is equal to the dimension of $[A]$. Recall that $i^2 = -1$. We can write $[A]$ as follows
+\begin{align*}
+[A] =& [Q]^{-1}[D][Q] \\
+	=& \begin{bmatrix}
+		1 & 7 + 2 \sqrt{11}i & 7 - 2 \sqrt{11}i \\
+		-1 & -4 + \sqrt{11}i & -4 - \sqrt{11} i \\
+		3 & 3 & 3 \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		2 & 0 & 0 \\
+		0 & 3 + \sqrt{11}i & 0 \\
+		0 & 0 & 3 - \sqrt{11}i \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		\frac{-1}{12} & \frac{1}{6} & \frac{5}{12} \\
+		\frac{1}{24} - i \frac{\sqrt{11}}{88} & -\frac{1}{12} - i \frac{\sqrt{11}}{44} & -\frac{1}{24} - i \frac{\sqrt{11}}{264} \\
+		\frac{1}{24} + i \frac{\sqrt{11}}{88} & -\frac{1}{12} + i \frac{\sqrt{11}}{44} & -\frac{1}{24} + i \frac{\sqrt{11}}{264} \\		
+		\end{bmatrix}
+\end{align*}
+
+Consider that $e^{[A]} = [Q]^{-1}(e^{[D]})[Q]$.
+\begin{align*}
+e^{[A]} =& [Q]^{-1}(e^{[D]})[Q]\\
+	=& \begin{bmatrix}
+		1 & 7 + 2 \sqrt{11}i & 7 - 2 \sqrt{11}i \\
+		-1 & -4 + \sqrt{11}i & -4 - \sqrt{11} i \\
+		3 & 3 & 3 \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		e^2 & 0 & 0 \\
+		0 & e^{3 + \sqrt{11}i} & 0 \\
+		0 & 0 & e^{3 - \sqrt{11}i} \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		\frac{-1}{12} & \frac{1}{6} & \frac{5}{12} \\
+		\frac{1}{24} - i \frac{\sqrt{11}}{88} & -\frac{1}{12} - i \frac{\sqrt{11}}{44} & -\frac{1}{24} - i \frac{\sqrt{11}}{264} \\
+		\frac{1}{24} + i \frac{\sqrt{11}}{88} & -\frac{1}{12} + i \frac{\sqrt{11}}{44} & -\frac{1}{24} + i \frac{\sqrt{11}}{264} \\		
+		\end{bmatrix}
+\end{align*}
+
+We rewrite $e^{[D]}$ using Euler's formula, where $e^{ix} = \cos x + i\sin x$ for $x \in \R$. Also note the negative angle identities, where $\sin(-x) = -\sin(x)$ and $\cos(-x) = \cos(x)$.
+\begin{align*}
+e^{[D]} &= \begin{bmatrix}
+		e^2 & 0 & 0 \\
+		0 & e^{3 + \sqrt{11}i} & 0 \\
+		0 & 0 & e^{3 - \sqrt{11}i} \\
+		\end{bmatrix} \\
+		&= 
+		\begin{bmatrix}
+		e^2 & 0 & 0 \\
+		0 & e^{3}e^{\sqrt{11}i} & 0 \\
+		0 & 0 & e^{3}e^{-\sqrt{11}i} \\
+		\end{bmatrix} \\
+		&=
+		\begin{bmatrix}
+		e^2 & 0 & 0 \\
+		0 & e^{3}(\cos \sqrt{11} + i\sin \sqrt{11}) & 0 \\
+		0 & 0 & e^{3}(\cos \sqrt{11} - i\sin \sqrt{11}) \\
+		\end{bmatrix}
+\end{align*}
+
+Finally, we can use this to find $e^{[A]}$:
+\begin{align*}
+e^{[A]} =& [Q]^{-1}(e^{[D]})[Q]\\
+	=& \begin{bmatrix}
+		1 & 7 + 2 \sqrt{11}i & 7 - 2 \sqrt{11}i \\
+		-1 & -4 + \sqrt{11}i & -4 - \sqrt{11} i \\
+		3 & 3 & 3 \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		e^2 & 0 & 0 \\
+		0 & e^{3}(\cos \sqrt{11} + i\sin \sqrt{11}) & 0 \\
+		0 & 0 & e^{3}(\cos \sqrt{11} - i\sin \sqrt{11}) \\
+		\end{bmatrix} \\
+		&\begin{bmatrix}
+		\frac{-1}{12} & \frac{1}{6} & \frac{5}{12} \\
+		\frac{1}{24} - i \frac{\sqrt{11}}{88} & -\frac{1}{12} - i \frac{\sqrt{11}}{44} & -\frac{1}{24} - i \frac{\sqrt{11}}{264} \\
+		\frac{1}{24} + i \frac{\sqrt{11}}{88} & -\frac{1}{12} + i \frac{\sqrt{11}}{44} & -\frac{1}{24} + i \frac{\sqrt{11}}{264} \\		
+		\end{bmatrix} \\
+	=&
+	\begin{bmatrix}
+		\frac{(143\cos\sqrt{11}\cdot e - \sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{132} &
+		\frac{-(11\cos\sqrt{11}\cdot e - 43\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{66} &
+		\frac{-(55\cos\sqrt{11}\cdot e - 29\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 5)\cdot e^2}{132} \\
+		\frac{-(11\cos\sqrt{11}\cdot e + 23\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{132} &		
+		\frac{(77\cos\sqrt{11}\cdot e - \sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{66} &			 		
+		\frac{(55\cos\sqrt{11}\cdot e + 7\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 55)\cdot e^2}{132}	\\
+		\frac{(11\cos\sqrt{11}\cdot e + 3\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{44} &		
+		\frac{-(11\cos\sqrt{11}\cdot e - 3\sin\sqrt{11}\cdot e \cdot\sqrt{11} - 11)\cdot e^2}{22} &		
+		\frac{-(11\cos\sqrt{11}\cdot e - \sin\sqrt{11}\cdot e \cdot\sqrt{11} - 55)\cdot e^2}{44} \\						
+	\end{bmatrix}
+\end{align*}
+
+\section*{Part 5 \textmd{Proof of Cayley Hamilton for $[A]$}}
+
+Let $[A] \in M_{n \times n}(\C)$ be an arbitrary diagonalizable matrix, where $[A] = [Q]^{-1}[D][Q]$. As before, $[D] = [d_{ij}]$, where $d_{ij} = 0$ if $i \ne j$. Let $[I] \in M_{n \times n}(\C)$ denote the identity matrix.
+
+First, we consider a proof of Cayley-Hamilton for the diagonal matrix $[D]$. Let $\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}(t)$ be the characteristic polynomial for $[D]$. We wish to show that $\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]) = [0] \in M_{n \times n}(\C)$.
+
+Consider that $\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}(t) := det(D-tI)$. We know that the matrix $[D-tI] \in M_{n \times n}(\C)$ is diagonal, with diagonal entries $[d_{ii} - t]$ so 
+\begin{align*}
+\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}(t) 
+	&= det(D-tI) \\ 
+	&= \prod_{i=1}^{n}d_{ii}-t \\
+	&= (d_{11} - t)(d_{22} - t) \cdots (d_{nn} - t) \\
+	&= (d_{11}t^0 - t)(d_{22}t^0 - t) \cdots (d_{nn}t^0 - t)	
+\end{align*}
+
+Now consider
+\begin{align*}
+\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]) 
+	=& (d_{11}[D]^0 - [D])(d_{22}[D]^0 - [D]) \cdots (d_{nn}[D]^0 - [D]) \\
+	=& (d_{11}[I] - [D])(d_{22}[I] - [D]) \cdots (d_{nn}[I] - [D]) \\
+	=& (
+		\begin{bmatrix}
+		d_{11} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{11} \\
+		\end{bmatrix}
+		-
+		\begin{bmatrix}
+		d_{11} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{nn} \\
+		\end{bmatrix}
+		) \\
+		&(
+		\begin{bmatrix}
+		d_{22} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{22} \\
+		\end{bmatrix}
+		-
+		\begin{bmatrix}
+		d_{11} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{nn} \\
+		\end{bmatrix}
+		) \\
+		&\hspace{8em} \vdots \\
+		&(
+		\begin{bmatrix}
+		d_{nn} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{nn} \\
+		\end{bmatrix}
+		-
+		\begin{bmatrix}
+		d_{11} & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & d_{nn} \\
+		\end{bmatrix}
+		) \\
+	=& (
+		\begin{bmatrix}
+		0_\C & 0_\C & \cdots & 0_\C \\
+		\vdots & d_{11} - d_{22} & \ddots & \vdots \\
+		\vdots & \vdots & \ddots & \vdots \\
+		0_\C & 0_\C & \cdots & d_{11} - d_{nn} \\
+		\end{bmatrix}
+		) \hspace{7.8em} \text{where } d_{11} - d_{11} = 0_\C \\
+		&(
+		\begin{bmatrix}
+		d_{22} - d_{11} & 0_\C & \cdots & 0_\C \\
+		\vdots & 0_\C & \ddots & \vdots \\
+		\vdots & \vdots & \ddots & \vdots \\		
+		0_\C & 0_\C & \cdots & d_{22} - d_{nn} \\
+		\end{bmatrix}
+		) \hspace{7.8em} \text{where } d_{22} - d_{22} = 0_\C \\
+		&\hspace{5em} \vdots \hspace{17.5em} \text{where } d_{ii} - d_{ii} = 0_\C \\
+		&(
+		\begin{bmatrix}
+		d_{nn} - d_{11} & 0_\C & \cdots & 0_\C \\
+		\vdots & d_{nn} - d_{22} & \ddots & \vdots \\
+		\vdots & \vdots & \ddots & \vdots \\		
+		0_\C & 0_\C & \cdots & 0_\C \\
+		\end{bmatrix}
+		) \hspace{7.8em} \text{where } d_{nn} - d_{nn} = 0_\C \\ \\
+	=&(
+		\begin{bmatrix}
+		0_\C & 0_\C & \cdots & 0_\C \\
+		\vdots & 0_\C & \ddots & \vdots \\
+		\vdots & \vdots & \ddots & \vdots \\
+		0_\C & 0_\C & \cdots & d_{11} - d_{nn} \\
+		\end{bmatrix}
+		) \hspace{10.8em} \text{by multiplying the first two matrices} \\
+		&\hspace{5em} \vdots \\
+		&(
+		\begin{bmatrix}
+		d_{nn} - d_{11} & 0_\C & \cdots & 0_\C \\
+		\vdots & d_{nn} - d_{22} & \ddots & \vdots \\
+		\vdots & \vdots & \ddots & \vdots \\		
+		0_\C & 0_\C & \cdots & 0_\C \\
+		\end{bmatrix}
+		) \\ \\
+	=&
+		\begin{bmatrix}
+		0_\C & \cdots & 0_\C \\
+		\vdots & \ddots & \vdots \\
+		0_\C & \cdots & 0_\C \\
+		\end{bmatrix} \hspace{16.9em} \text{by multiplying all $n$ matrices} \\
+	=& [0] \in M_{n \times n}(\C)
+\end{align*}
+
+Having proven that $\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]) = [0] \in M_{n \times n}(\C)$, we now prove that $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) = [0] \in M_{n \times n}(\C)$, where $[A] = [Q]^{-1}[D][Q]$.
+
+Let $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t)$ be the characteristic polynomial of the matrix $[A]$. We know that the characteristic polynomial is independent of choice of \textit{basis}, where the matrices $[A]$ and $[D]$ represent the same transformation $T$ under different \textit{bases}, by the definition of diagonalizibility. Therefore
+\begin{align*}
+\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}(t) 
+&= \chi_{\raisebox{-.5ex}{$\scriptstyle D$}}(t) \\
+&= (d_{11}t^0 - t)(d_{22}t^0 - t) \cdots (d_{nn}t^0 - t)	
+\end{align*}
+
+We prove that $\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) = [0] \in M_{n \times n}(\C)$ through a process of substitution, factorization of $[Q]$ and $[Q]^{-1}$, and the usage of the fact that $\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]) = (d_{11}[I] - [D])(d_{22}[I] - [D])\cdots(d_{nn}[I] - [D]) = [0] \in M_{n \times n}(\C)$.
+\begin{align*}
+	\chi_{\raisebox{-.5ex}{$\scriptstyle A$}}([A]) 
+	=& (d_{11}[A]^0 - [A])(d_{22}[A]^0 - [A]) \cdots (d_{nn}[A]^0 - [A]) \\
+	=& (d_{11}[Q]^{-1}[I][Q] - [Q]^{-1}[D][Q]) \\ &(d_{22}[Q]^{-1}[I][Q] - [Q]^{-1}[D][Q]) \\ &\hspace{6em}\vdots \\ &(d_{nn}[Q]^{-1}[I][Q] - [Q]^{-1}[D][Q])  \hspace{15.7em} \text{by diagonalizibility}\\
+	=& [Q]^{-1}(d_{11}[I] - [D])(d_{22}[I] - [D])\cdots(d_{nn}[I] - [D])[Q]  \hspace{6.2em} \text{by distributivity} \\
+	=& [Q]^{-1}(\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]))[Q] \\
+	=& [Q]^{-1}([0])[Q] \hspace{23.5em} \text{$\chi_{\raisebox{-.5ex}{$\scriptstyle D$}}([D]) = [0]$} \\
+	=& [0] \in M_{n \times n}(\C)
+\end{align*}
+$\square$
+\end{document}

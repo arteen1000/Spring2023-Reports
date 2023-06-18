@@ -1,0 +1,128 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[skip=0.25cm]{parskip}
+\usepackage[total={6.5in, 8.75in}, top=1.2in, left=0.9in, includefoot]{geometry} 
+
+\usepackage{graphicx} % images
+\usepackage{enumitem} % managing lists
+\usepackage{float} % precise placement
+
+\usepackage{listings} % code
+\usepackage{amssymb, amsmath}
+\usepackage{outlines}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\0}{\textbf{0}}
+\newcommand{\1}{\textbf{1}}
+\renewcommand{\t}{\textbf{t}}
+\renewcommand{\a}{\textbf{a}}
+\renewcommand{\b}{\textbf{b}}
+\renewcommand{\c}{\textbf{c}}
+
+\title{
+Modeling the Lightbulb Problem as a Vector Space \\
+\large Challenge Report 1 \\
+Math 115A}
+\author{Arteen Abrishami}
+\date{}
+
+\renewcommand{\abstractname}{Problem Statement}
+
+\usepackage{titlesec}
+
+\newcommand\almostnormalsize{\fontsize{11.42}{11.38}\selectfont}
+
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\almostnormalsize\bfseries}
+
+\allowdisplaybreaks
+
+\linespread{1.5}
+\let\tab\quad
+\begin{document}
+\maketitle
+\begin{abstract}
+There are $n$ lightbulbs, arranged in a circle. All are off, but there is a switch at the base of each. Flipping a particular lightbulb's switch toggles the on/off state of itself and those adjacent to it. In other words, flipping a switch at the base of a lightbulb ($l_i$) toggles the on/off states of the lightbulbs $\{l_{i-1},l_i,l_{i+1}\}$. For the purposes of this problem, we assume $n$ is non-trivial, in that $n \in \Z_{>0}$.
+
+It is important to note that addition in $\F_2$ is defined as: $$+_{\F_2}: \F_2 \times \F_2 \rightarrow \F_2$$ $$ a +_{\F_2} b := (a + b)\bmod{2} $$ for $a, b \in \F_2$.
+\end{abstract}
+\section*{Part 1}
+
+\subsection*{(a)}
+
+The set of on/off states of the lightbulbs forms a vector space $V$ over the finite field $\F_2$. We can define the vector space as: $$V = (\F{_2})^n = \{ (a_1, ..., a_n) \: | \: a_i \in \F_2 \} $$ We define the \emph{zero} vector as $$\0 = (0, ..., 0)$$ where $0=0_{\F_2}$. This can be used to represent all $n$ lightbulbs being off. 
+We define vector addition component-wise, in the usual way: $$+_V: V \times V \rightarrow V$$ $$(a_1, ..., a_n) +_V (b_1, ..., b_n) := (a_1 +_{\F_2} b_1, ..., a_n +_{\F_2} b_n)$$ We define scalar multiplication, also component-wise: $$\cdot_V: \F_2 \times V \rightarrow V$$ $$ \lambda \cdot_V (a_1, ..., a_n) := (\lambda \cdot_{\F_2} a_1, ..., \lambda \cdot_{\F_2} a_n)$$ 
+
+\subsection*{(b)}
+
+By definition, there are $n$ components in any $v\in V$, with each having two possible states: $\F_2 = \{0, 1\}$. By the multiplication principle, this means that there are $2^n$ distinct vectors in $V$. Therefore, we can say that the size of $V$ is $2^n$. 
+
+\subsection*{(c)}
+
+We define a distinguished vector $\t_i \in V$, which we shall call the \emph{toggle} vector about a subscript $i \in \{1, 2, ..., n\}$ for $ n \ge 3 $. This is defined: $$\t_i = (0, ..., 0, t_{i-1}, t_i, t_{i+1}, 0, ..., 0)$$ where $t_{i-1}, t_i, t_{i+1} = 1_{\F_2}$. The semantics of subscript addition are as follows: $$i+j := (i+j)\bmod{n}$$ s.t. the subscript $0 := n$ so that $0\bmod{n} = 0 = n$ and $n+1 = (n+1)\bmod{n} = 1$ and $1-1 = (1-1)\bmod{n} = n$. In other words, subscript addition is defined to wrap around (exhibit modulo behavior). For $0 < n \le 2$, we have a case where it may be that any of $\{i-1,i,i+1\}$ are equal. Thus, the vector $\t_i$ with subscript behavior is only defined for $n \ge 3$.
+
+For $ n = 1 $, we define the toggle vector $\t$ as: $$\t = (1)$$ For $ n = 2$, we define the toggle vector $\t$ as $$\t = (1, 1)$$
+
+In general, we do not contain the cases where $ 0 < n \le 2$, since the vector $\t = \1$. The vector $\1$ is defined in \textbf{Part 2}.
+
+\section*{Part 2}
+
+In order to model this system, we must define a distinguished vector $\1 \in V$, which we shall call the \emph{one} vector, as $$\1 = (1, ..., 1)$$ where $1=1_{\F_2}$. The vector $\1$ corresponds to all the lights being on, just as $\0$ corresponds to all the lights being off.
+
+\section*{Part 3}
+
+Suppose $n \equiv 0\pmod{3}$, with the minimum possible value of $n$ being $3$. Given that we begin with all $n$ lightbulbs off, we would like to turn all $n$ lightbulbs on while toggling the minimum number of switches. We can model this using our definition of addition and the \emph{toggle} vector $\t_i$. Through a series of additions, arbitrarily beginning with $\0$ (all lightbulbs off), we can derive a summation that is generally equal to the vector $\1$ (all lightbulbs on): $$\0 + \t_2 + \t_5 + \t_8 + ... + \t_{n-1} = \t_2 + \t_5 + \t_8 + ... + \t_{n-1}$$ 
+By definition, $n =3k$ for $k \in \Z_{>0}$:
+$$\t_2 + \t_5 + \t_8 + ... + \t_{n-1} = \sum_{i=0}^{k-1} \t_{2+3i}$$
+$$\sum_{i=0}^{k-1} \t_{2+3i} = \1$$
+
+We can verify that this series is optimal by noting that $k$ is equal to the number of $\t_i$ required, with each corresponding to a \emph{toggle} action, as described in the problem statement. Since you can at most toggle $3$ lightbulbs at a time, then $k=n/3$ must be optimal. In other words, suppose that an algorithm exists with $j < k$ toggle actions. Since $j < n/3$, then all $n$ lightbulbs were not turned on.
+
+\section*{Part 4}
+
+\subsection*{(a)}
+
+Suppose $n \equiv 1\pmod{3}$, with the minimum possible value of $n$ being $1$. As an intermediary step in accomplishing the same task as \textbf{Part 3} (where we go from all $n$ lightbulbs off to all $n$ lightbulbs on, with the minimum number of toggles), we must first reach a state where there is exactly one lightbulb on. This intermediary state can be modeled by $\a \in V$ s.t $\a = (1, 0, 0, ..., 0)$, a vector where the first component is $1_{\F_2}$, with the rest being $0_{\F_2}$. As in \textbf{Part 3}, we can derive a summation that is generally equal to the vector $\a$:
+$$\0 + \t_1+\t_2+\t_4+\t_5+\t_7+\t_8+...+\t_n =  \t_1+\t_2+\t_4+\t_5+\t_7+\t_8+...+\t_n$$
+By definition, $n = 3k+1$ for $k \in \Z_{>0}$ s.t $k=\frac{n-1}{3}$. We note that there is no subscript that is an integral multiple of 3. Doing so, we can put it into the following notation:
+$$ \t_1+\t_2+\t_4+\t_5+\t_7+\t_8+...+\t_n = (\t_1 + \t_2 + \t_3 + ... \t_n) \: - \: (\t_3 + \t_6 ... + \t_{n-1})$$
+$$(\t_1 + \t_2 + \t_3 + ... \t_n) \: - \: (\t_3 + \t_6 ... + \t_{n-1}) = \sum_{i=1}^{n} \t_i \; - \; \sum_{i=1}^{k} \t_{3i}$$
+$$ \sum_{i=1}^{n} \t_i \; - \; \sum_{i=1}^{k} \t_{3i} = \a = (1, 0, 0, ...., 0)$$
+
+In words, we can consider the algorithm displayed above to be as such: begin with $\t_1$. For the vector $\t_i$ at arbitrary position $i$, if $i \equiv 1\bmod{2}$, we $+1$ to the subscript $i$ to get the next subscript $i+1$, and if $i \equiv 0\bmod{2}$, we $+2$ to the subscript $i$ to get the next subscript as $i+2$. In other words, we alternate adding $1$ or $2$ to each subscript to get the next, beginning at $1$ and ending in $n$. This will always require $2k+1$ vectors $\t_i$. 
+
+As an example, consider when $n =7$: $$\t_1 + \t_2 + \t_4 + \t_5 + \t_7 = \a = (1, 0, 0, 0, 0, 0, 0)$$
+
+As a corollary, you may also obtain the vector $\b \in V, \; \b = (0, 0, ..., 0, 1)$, simply by first adding $2$ to the subscript of $\t_1$ rather than $1$, and alternating in the same way.
+
+\subsection*{(b)}
+
+Now we consider how to turn all $n$ lights from a state where the first light is on, represented by the vector $\a$ we derived in part (a). Consider: 
+$$ \a + \t_3 + \t_6 + \t_9 + ... + \t_{n-1} = \a +  \sum_{i=0}^{k-1} \t_{3+3i} = \1$$
+This summation should look familiar from \textbf{Part 3}. We have effectively performed the same method for toggling, but have begun at $\t_i$ about subscript $3$ as opposed to subscript $2$. We know that, the series: $$ \t_3 + \t_6 + \t_9 + ... + \t_{n-1} =  \sum_{i=0}^{k-1} \t_{3+3i} = (0, 1, 1, ..., 1)$$ consists of $k$ vectors $\t_i$. Since the previous step to obtain $\a$ took $2k+1$ vectors $\t_i$, we see that $(2k+1) + k = 3k + 1 \le n$, meaning that there were at most $n$ vectors $\t_i$ involved in obtaining the vector $\1$. In other words, it took at most $n$ toggles in order to turn all $n$ lightbulbs on, where $n \equiv 1\pmod{3}$.
+
+\section*{Part 5}
+
+\subsection*{(a)}
+
+To wrap up our discussion, suppose $n \equiv 2\pmod{3}$, with the minimum possible value of $n$ being $2$. We must perform a similar intermediary step as our task in \textbf{Part 4} in order to complete the equivalent task of \textbf{Part 3}; however, in this case, our intermediary vector will represent that which has 2 lightbulbs on. Let $\c \in V, \; \c = (1, 1, 0, 0, ..., 0)$.
+
+Note that $n = 3k+2$, $k \in \Z_{> 0}$ s.t $k = \frac{n-2}{3}$. Recall the vector $\b = (0,0,...,0,1)$ from the corollary in \textbf{Part 4}, which can be obtained in the following way:
+$$\t_2 + \t_3 + \t_5 + \t_6 + \t_8 ... + \t_n = \sum_{i=1}^{n} \t_i \; - \; \sum_{i=0}^{k} \t_{1+3i} = \b$$
+
+Note that $2k+1$ \emph{toggle} vectors $\t_i$ were required in the following series to obtain the vector $\b$, equal to the number that were required to obtain the vector $\a$ in \textbf{Part 4}. From here, we obtain the vector $\c$ as follows:
+$$\b + \t_1 = \c = (1, 1, 0, 0, ..., 0)$$
+
+requiring in total $2k+2$ vectors $\t_i$.
+
+\subsection*{(b)}
+
+Finally, we perform the trivial task of turning the remaining lights on, resulting in the vector $\1$. This can be done as follows:
+
+$$\c + \t_4 + \t_7 + ... + \t_{n-1} = \c + \sum_{i=0}^{k-1} \t_{4+3i} = \1$$ 
+
+where $k$ additional vectors $\t_i$ were required. We can see that a total of $(2k+2) + k = 3k+2$ vectors were required, where $3k+2 \le n$, meaning that at most $n$ vectors $\t_i$ were required to obtain the vector $\1$ in the case that $n \equiv 2\pmod{3}$. This is equivalent to saying that the number of switches to go from all lights off to all lights on took at most $n$ flips.
+
+With that, we conclude our discussion of the lightbulb problem. $\square$
+
+\end{document}

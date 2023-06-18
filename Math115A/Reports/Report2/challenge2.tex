@@ -1,0 +1,243 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[skip=0.25cm]{parskip}
+\usepackage[total={6.5in, 8.75in}, top=1.2in, left=0.9in, includefoot]{geometry} 
+
+\usepackage{graphicx} % images
+\usepackage{enumitem} % managing lists
+\usepackage{float} % precise placement
+
+\usepackage{listings} % code
+\usepackage{amssymb, amsmath}
+\usepackage{outlines}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\0}{\textbf{0}}
+\newcommand{\1}{\textbf{1}}
+\renewcommand{\t}{\textbf{t}}
+\renewcommand{\a}{\textbf{a}}
+\renewcommand{\b}{\textbf{b}}
+\renewcommand{\c}{\textbf{c}}
+
+\title{
+A Matrix Representation for the Combinatorics of Student Club Participation \\
+\large Challenge Report 2 \\
+Math 115A}
+\author{Arteen Abrishami}
+\date{}
+\renewcommand{\abstractname}{Problem Statement}
+
+\usepackage{titlesec}
+
+\newcommand\almostnormalsize{\fontsize{11.42}{11.38}\selectfont}
+
+\titleformat*{\section}{\normalsize\bfseries}
+\titleformat*{\subsection}{\almostnormalsize\bfseries}
+
+\allowdisplaybreaks
+
+\linespread{1.5}
+\let\tab\quad
+\begin{document}
+\maketitle
+\begin{abstract}
+A club is a \textbf{non-empty} set of students. No two clubs have the exact same set of students. That is, if $\exists$ two distinct clubs $C_{1}, C_{2} $ then $ C_{1} \ne C_{2} $. 
+
+Let $ \exists n \in \N $ students, where $ \N = \{ 1, 2, 3, ... \} $. We label the students from 1 to $n$ in some arbitrary order. Similarly, let $\exists m \in \N $ clubs, labeled from 1 to $m$ in some arbitrary order. Consider the function:
+$$ a_{ij} = \left\{
+		\begin{array}{ll}
+			1 & \text{ if club } C_i \text{ contains student } S_j \\
+			0 & \text{ else} 
+		\end{array}
+		\right.$$
+
+We define an \textbf{incidence matrix} $A \in M_{m \times n}(\R) = [a_{ij}] $ such that the rows of the matrix correspond to the clubs and the columns to the students.
+
+Later, it will be important to note that addition in $\F_2$ is defined as: 
+$$+_{\F_2}: \F_2 \times \F_2 \rightarrow \F_2$$ $$ a +_{\F_2} b := (a +_{\R} b)\bmod{2} $$
+ for $a, b \in \F_2$. For completeness, note that multiplication in $\F_2$ is defined as: 
+ $$\cdot_{\F_2}: \F_2 \times \F_2 \rightarrow \F_2$$ $$ a \cdot_{\F_2} b := (a \cdot_{\R} b)\bmod{2} $$
+ for $a, b \in \F_2$. \\
+ \end{abstract}
+
+\section*{Part 1 \textmd{Counting Clubs}}
+
+Let $n$ be the number of students and $m$ be the number of clubs that students are in.
+
+\subsection*{(1) \textmd{rank(A)}}
+
+The rank of the incidence matrix $A \in M_{m \times n}(\R)$ corresponds to the number of linearly independent columns in $A$. Considering that a column can be viewed as a student vector $S_{j}$, we can say that there are $rank(A)$ number of linearly independent vectors $S_{j}$, with each row representing whether they are in a given club $C_i$ or not. Equivalently, we can say that the rank corresponds to the number of students whose club participation can form (as a linear combination) the club participation of the other students (those students corresponding to a linearly dependent vector $S_{j}$).
+
+The upper bound on the rank of $A$ is therefore $n$, as there can be at most $n$ linearly independent columns, or vectors $S_j$, spanning the column space. In other words, the upper bound on the $rank(A)$ is the number of students whose club participation is being tracked. This occurs when each student $S_j$ cannot be formed as a linear combination of the other students (or columns) in the matrix $A$.
+
+Another way of looking at this is to say that the upper bound on $rank(A)$ is the dimension of the $Im(A)$, where $dim(Im(A)) \le n$. On the occasion that $rank(A) = n$, which we call the matrix $A$ having \emph{full rank}, we know that the club participations of every student $S_j$ are completely independent of one another, as linear combinations.
+
+\subsection*{(2) \textmd{$AA^T$}}
+
+Considering the matrix $AA^T$. We attempt to generate a formula for its entries in terms of the entries of $A$ and $A^T$.
+
+\begin{align*}
+A &=\begin{bmatrix}
+a_{11} & ... & ... & a_{1n} \\
+a_{21} & ... & ... & a_{2n} \\
+... & ... & ... & ... \\
+a_{m1} & ... & ... & a_{mn}
+\end{bmatrix} \\
+A^T &= \begin{bmatrix}
+a_{11} & ... & ... & a_{m1} \\
+a_{12} & ... & ... & a_{m2} \\
+... & ... & ... & ... \\
+a_{1n} & ... & ... & a_{mn}
+\end{bmatrix} \\
+AA^T &= 
+\begin{bmatrix}
+a_{11} & ... & ... & a_{1n} \\
+a_{21} & ... & ... & a_{2n} \\
+... & ... & ... & ... \\
+a_{m1} & ... & ... & a_{mn}
+\end{bmatrix}
+\begin{bmatrix}
+a_{11} & ... & ... & a_{m1} \\
+a_{12} & ... & ... & a_{m2} \\
+... & ... & ... & ... \\
+a_{1n} & ... & ... & a_{mn}
+\end{bmatrix} \\
+&= 
+\begin{bmatrix}
+a_{11}a_{11} + a_{12}a_{12} + ... + a_{1n}a_{1n}  & ... & a_{11}a_{m1} + a_{12}a_{m2} + ... + a_{1n}a_{mn} \\
+a_{21}a_{11} + a_{22}a_{12} + ... + a_{2n}a_{1n} & ... & a_{21}a_{m1} + a_{22}a_{m2} + ... + a_{2n}a_{mn}  \\
+... & ... & ... \\
+a_{m1}a_{11} + a_{m2}a_{12} + ... + a_{mn}a_{1n} &  ... & a_{m1}a_{m1} + a_{m2}a_{m2} + ... + a_{mn}a_{mn} 
+\end{bmatrix} \\
+&= 
+\begin{bmatrix}
+\sum_{k=1}^{n} a_{1k}a_{1k} & ... & \sum_{k=1}^{n} a_{1k}a_{mk}  \\
+\sum_{k=1}^{n} a_{2k}a_{1k}  & ... & \sum_{k=1}^{n} a_{2k}a_{mk}  \\
+... & ... & ... \\
+\sum_{k=1}^{n} a_{mk}a_{1k} &  ... & \sum_{k=1}^{n} a_{mk}a_{mk} 
+\end{bmatrix}
+\end{align*}
+
+Therefore, in general, we can say that $AA^T \in M_{m \times m}(\R) = [ a^T_{ij} ]$ where $a^T_{ij}$ is the function defined by:
+$$
+a^T_{ij} = \sum_{k=1}^{n} a_{ik}a_{jk}
+$$
+
+in terms of the entries in the incidence matrix $A$.
+
+The entry $a^T_{ij}$ in $AA^T \in M_{m \times m}(\R)$, otherwise known as the \textbf{intersection matrix}, describes how many students the clubs $C_i$ and $C_j$ have in common. Note that this matrix is therefore \emph{symmetric}.
+
+As a corrollary, the diagonal entries $\{ a^T_{11},\; a^T_{22},\; ... \}$, where $i = j$, simply denote the number of students in the the corresponding club $\{ C_{1},\; C_{2},\; ... \}$. \\
+
+\section*{Part 2 \textmd{Two Rules on Clubs}}
+
+To recap, a club is a \textbf{non-empty} subset of students where $C_i \ne C_j$ when $i \ne j$. That is, no two distinct clubs have the exact same set of students. 
+
+We now impose two rules:
+
+\tab (a) Every club must have an \emph{odd} number of members
+
+\tab (b) Every club must have an \emph{even} number of members in common
+
+Considering these rules, we find an upper bound on the number of possible clubs. Once again, let $n$ be the number of students and $m$ be the number of clubs that the students are in.
+
+\subsection*{(3) \textmd{Generalizing $AA^T$ over $\F_2$}}
+
+As a first step, we describe the entries in the matrix $AA^T \in M_{m \times m}(\F_2)$. Note that we are now considering $AA^T$ as a matrix over the field $\F_2$, as opposed to $\R$. Recall the definitions of addition and multiplication in $\F_2$ from the abstract.
+
+Consider then the entries of $AA^T \in M_{m \times m}(\F_2)$:
+
+$$
+AA^T=
+\begin{bmatrix}
+\sum_{k=1}^{n} a_{1k}a_{1k} & ... & \sum_{k=1}^{n} a_{1k}a_{mk}  \\
+\sum_{k=1}^{n} a_{2k}a_{1k}  & ... & \sum_{k=1}^{n} a_{2k}a_{mk}  \\
+... & ... & ... \\
+\sum_{k=1}^{n} a_{mk}a_{1k} &  ... & \sum_{k=1}^{n} a_{mk}a_{mk} 
+\end{bmatrix}
+$$
+
+With the definition of addition and multiplication over $\F_2$, we find that $a^T_{ij}$ is 1 if the clubs $C_i, C_j$ share an odd number of members in common and 0 if the clubs $C_i, C_j$ share an even number of members in common.
+
+\subsection*{(4) \textmd{Restricting $AA^T$ to our Problem}}
+
+With our restrictions that we defined earlier, denoted (a) and (b), we know that when $i=j$ then $A^T_{ij} = 1$ since every club has an odd number of members (therefore, every club has an odd number of members in common with itself). We also know that when $i \ne j$, then $A^T_{ij} = 0$, since every club may only have an even number of members in common. Therefore, our matrix $AA^T \in M_{m \times m}(\F_2)$ is exactly:
+
+\renewcommand{\arraystretch}{0.8}
+$$
+AA^T =
+\begin{bmatrix}
+1 & 0 & ... & 0  \\
+0 & 1 & ... & 0  \\
+0 & 0 & ... & 0  \\
+0 & 0 & ... & 1 
+\end{bmatrix}
+$$
+
+In other words, $AA^T = I_m$ where $I_m \in M_{m \times m}(\F_2)$ is the identity matrix with $m$ rows and $m$ columns over $\F_2$.
+
+The rank of $AA^T$ is therefore exactly $m$, as the identity matrix $I_m$ has exactly $m$ linearly independent columns. This is the number of student clubs.
+
+\subsection*{(5) \textmd{Proof on Limit on Student Clubs with Restrictions}}
+
+Consider two arbitrary matrices $A,B$ over a field $\F$, where we can form $AB$. Note that this means that $A$ and $B$ must be the appropriate dimensions. We want to show that $ rank(AB) \le min\{rank(A), rank(B)\}$.
+
+To do this, we must show that $rank(AB) \le rank(A)$ and $rank(AB) \le rank(B)$. \\
+
+Show: $rank(AB) \le rank(A)$
+
+Proof:
+
+Let $v \in Im(AB)$. \\
+$\exists u$ s.t. $v = ABu$ by definition. \\
+Let $w = Bu$. So $v = Aw$. \\
+Therefore, $v \in Im(A)$. \\
+Conclude $Im(AB) \subseteq Im(A)$. \\
+Therefore, $dim(Im(AB)) \le dim(Im(A))$. \\
+Therefore, $rank(AB) \le rank(A)$. $\square$ \\
+
+Show: $rank(AB) \le rank(B)$
+
+Proof:
+
+Let $\exists v \in ker(B)$. \\
+Then $Bv = 0$. \\
+Therefore, $ABv = A(Bv) = A(0) = 0$. \\
+Conclude $v \in ker(AB)$. \\
+So $ker(B) \subseteq ker(AB)$. \\
+Therefore, $dim(ker(B)) \le dim(ker(AB))$. \\
+Equivalently, $nullity(B) \le nullity(AB)$.
+\vspace{0.5em}
+
+Let $n$ be the dimension of the input space. \\
+By rank-nullity, $rank(AB) + nullity(AB) = n$. \\
+By previous proof, $nullity(B) \le nullity(AB)$. \\
+Therefore, $rank(AB) + nullity(B) \le n$. \\
+Equivalently, $rank(AB) \le n - nullity(B)$.
+\vspace{0.5em}
+
+Recall $AB$ and $B$ share the same input space. \\
+By rank-nullity, $rank(B) + nullity(B) = n$ \\
+Equivalently, $rank(B) = n - nullity(B)$.
+\vspace{0.5em}
+
+Therefore, we can say $rank(AB) \le rank(B)$. $\square$ \\
+
+We conclude that $rank(AB) \le min\{rank(A),rank(B)\}$, as desired.
+
+Finally, we deduce an upper bound for the number of clubs that $n$ students can participate in. We know that $AA^T = I_m \in M_{m \times m}(\F_2)$, where $m$ is the number of clubs. From the above result, we know that
+$$rank(AA^T) \le min\{rank(A),rank(A^T)\}$$
+Previously, we showed that $rank(AA^T) = m$. We also deduced that $rank(A) \le n$, which is true for any field $\F$. From this, we can say that
+$$rank(AA^T) \le rank(A)$$
+$$m \le n$$
+so that the number of clubs must always be less than or equal to the number of students. With that, we conclude our discussion of a matrix representation for the combinatorics of student club participation. $\square$
+
+
+
+
+
+
+
+\end{document}
